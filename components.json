@@ -1,4 +1,4 @@
-{
+{            
   "$schema": "https://ui.shadcn.com/schema.json",
   "style": "default",
   "rsc": true,
@@ -8,7 +8,7 @@
     "css": "app/globals.css",
     "baseColor": "neutral",
     "cssVariables": true,
-    "prefix": ""
+    "prefix": "" 
   },
   "aliases": {
     "components": "@/components",
