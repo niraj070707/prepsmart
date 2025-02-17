@@ -32,7 +32,7 @@ const StartInterview = ({ params }) => {
         console.log("Parsed Response:", mockInterviewQuestion);
         console.log("Hello:", GetQuestions());
         const InterviewQuestion = GetQuestions();
-        setInterviewQuestion();
+        setInterviewQuestion(InterviewQuestion);
 
     }, [mockInterviewQuestion]); // Log only after data is set
 
