@@ -12,6 +12,7 @@ const StartInterview = ({ params }) => {
     const [interviewData, setInterviewData] = useState(null);
     const [mockInterviewQuestion, setMockInterviewQuestion] = useState({});
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+    const [interviewQuestion, setInterviewQuestion] = useState([]);
 
     useEffect(() => {
         if (params.interview) {
@@ -30,6 +31,9 @@ const StartInterview = ({ params }) => {
     useEffect(() => {
         console.log("Parsed Response:", mockInterviewQuestion);
         console.log("Hello:", GetQuestions());
+        const InterviewQuestion = GetQuestions();
+        setInterviewQuestion();
+
     }, [mockInterviewQuestion]); // Log only after data is set
 
     const GetInterviewDetails = async () => {
@@ -54,12 +58,12 @@ const StartInterview = ({ params }) => {
         <div>
             <div className='mb-8 grid grid-cols-1 md:grid-cols-2 gap-10'>
                 <QustionsSection
-                    mockInterviewQuestion={mockInterviewQuestion?.interviewQuestions}  // Fixed key name
+                    mockInterviewQuestion={interviewQuestion}  // Fixed key name
                     activeQuestionIndex={activeQuestionIndex}
                 />
                 <RecordAnswerSection
                     interviewData={interviewData}
-                    mockInterviewQuestion={mockInterviewQuestion?.interviewQuestions}  // Fixed key name
+                    mockInterviewQuestion={interviewQuestion}  // Fixed key name
                     activeQuestionIndex={activeQuestionIndex}
                 />
             </div>
