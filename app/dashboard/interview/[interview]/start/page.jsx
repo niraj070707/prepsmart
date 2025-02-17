@@ -5,31 +5,43 @@ import { eq } from 'drizzle-orm';
 import React, { useEffect, useState } from 'react'
 import QustionsSection from './_components/QustionsSection';
 import RecordAnswerSection from './_components/RecordAnswerSection';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const StartInterview = ({ params }) => {
-    const [interviewData, setInterviewData] = useState();
-    const [mockInterviewQuestion, setMockInterviewQuestion] = useState();
+    const [interviewData, setInterviewData] = useState(null);
+    const [mockInterviewQuestion, setMockInterviewQuestion] = useState({});
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
 
     useEffect(() => {
-        console.log(params.interview);
-        GetInterviewDetails();
-    }, [])
+        if (params.interview) {
+            GetInterviewDetails();
+        }
+    }, [params.interview]);  // Ensuring the effect runs when `params.interview` changes
+
+    const GetQuestions = () => {
+        if (Object.keys(mockInterviewQuestion).length > 0) {
+            const firstKey = Object.keys(mockInterviewQuestion)[0];
+            return mockInterviewQuestion[firstKey];
+        }
+        return [];
+    }
+
+    useEffect(() => {
+        console.log("Parsed Response:", mockInterviewQuestion);
+        console.log("Hello:", GetQuestions());
+    }, [mockInterviewQuestion]); // Log only after data is set
 
     const GetInterviewDetails = async () => {
         try {
             const result = await db.select().from(MockInterview).where(eq(MockInterview.mockId, params.interview));
-            console.log(result);
 
             if (result.length > 0) {
                 setInterviewData(result[0]);
 
-                // Parse the JSON string into an object
+                // Parse the JSON response properly
                 const jsonMockResp = JSON.parse(result[0].jsonMockResp);
                 setMockInterviewQuestion(jsonMockResp);
-
-                // Log the parsed object properly
-                console.log("Parsed Response:", jsonMockResp);
             } else {
                 console.log("No interview data found");
             }
@@ -37,15 +49,33 @@ const StartInterview = ({ params }) => {
             console.error("Error fetching interview details:", error);
         }
     };
+
     return (
         <div>
-            <div className=' mb-8 grid grid-cols-1 md:grid-cols-2 gap-10'>
-                <QustionsSection mockInterviewQuestion={mockInterviewQuestion?.interview_questions} activeQuestionIndex={activeQuestionIndex}/>
-
-                <RecordAnswerSection interviewData={interviewData} mockInterviewQuestion={mockInterviewQuestion?.interview_questions} activeQuestionIndex={activeQuestionIndex}/>
+            <div className='mb-8 grid grid-cols-1 md:grid-cols-2 gap-10'>
+                <QustionsSection
+                    mockInterviewQuestion={mockInterviewQuestion?.interviewQuestions}  // Fixed key name
+                    activeQuestionIndex={activeQuestionIndex}
+                />
+                <RecordAnswerSection
+                    interviewData={interviewData}
+                    mockInterviewQuestion={mockInterviewQuestion?.interviewQuestions}  // Fixed key name
+                    activeQuestionIndex={activeQuestionIndex}
+                />
+            </div>
+            <div className='mb-5 gap-7 flex justify-end'>
+                {activeQuestionIndex > 0 && <Button onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}>Previous Question</Button>}
+                {activeQuestionIndex !== (mockInterviewQuestion?.interviewQuestions?.length - 1) && (
+                    <Button onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}>Next Question</Button>
+                )}
+                {activeQuestionIndex === (mockInterviewQuestion?.interviewQuestions?.length - 1) && (
+                    <Link href={`/dashboard/interview/${interviewData?.mockId}/feedback`}>
+                        <Button>End Interview</Button>
+                    </Link>
+                )}
             </div>
         </div>
-    )
+    );
 }
 
-export default StartInterview
+export default StartInterview;

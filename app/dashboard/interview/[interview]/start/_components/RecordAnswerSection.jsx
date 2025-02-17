@@ -26,6 +26,7 @@ const RecordAnswerSection = ({ interviewData, mockInterviewQuestion, activeQuest
     console.log('Questions:', questions);
 
     const {
+        setResults,
         error,
         isRecording,
         results,
@@ -109,6 +110,7 @@ const RecordAnswerSection = ({ interviewData, mockInterviewQuestion, activeQuest
         } finally {
             setLoading(false);
             setUserAnswer(''); // Reset user answer after saving
+            setResults([]);
         }
         
     };
