@@ -10,7 +10,7 @@ import Link from 'next/link';
 
 const StartInterview = ({ params }) => {
     const [interviewData, setInterviewData] = useState(null);
-    const [mockInterviewQuestion, setMockInterviewQuestion] = useState({});
+    // const [mockInterviewQuestion, setMockInterviewQuestion] = useState({});
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
     const [interviewQuestion, setInterviewQuestion] = useState([]);
 
@@ -20,21 +20,21 @@ const StartInterview = ({ params }) => {
         }
     }, [params.interview]);  // Ensuring the effect runs when `params.interview` changes
 
-    const GetQuestions = () => {
-        if (Object.keys(mockInterviewQuestion).length > 0) {
-            const firstKey = Object.keys(mockInterviewQuestion)[0];
-            return mockInterviewQuestion[firstKey];
-        }
-        return [];
-    }
+    // const GetQuestions = () => {
+    //     if (Object.keys(mockInterviewQuestion).length > 0) {
+    //         const firstKey = Object.keys(mockInterviewQuestion)[0];
+    //         console.log(mockInterviewQuestion);
+    //         return mockInterviewQuestion;
+    //     }
+    //     return [];
+    // }
 
-    useEffect(() => {
-        console.log("Parsed Response:", mockInterviewQuestion);
-        console.log("Hello:", GetQuestions());
-        const InterviewQuestion = GetQuestions();
-        setInterviewQuestion(InterviewQuestion);
-
-    }, [mockInterviewQuestion]); // Log only after data is set
+    // useEffect(() => {
+    //     console.log("Parsed Response:", mockInterviewQuestion);
+    //     console.log("Hello:", GetQuestions());
+    //     const InterviewQuestion = GetQuestions();
+    //     setInterviewQuestion(InterviewQuestion);
+    // }, [mockInterviewQuestion]); // Log only after data is set
 
     const GetInterviewDetails = async () => {
         try {
@@ -44,8 +44,9 @@ const StartInterview = ({ params }) => {
                 setInterviewData(result[0]);
 
                 // Parse the JSON response properly
-                const jsonMockResp = JSON.parse(result[0].jsonMockResp);
-                setMockInterviewQuestion(jsonMockResp);
+                const jsonMockResp = await JSON.parse(result[0].jsonMockResp);
+                // setMockInterviewQuestion(jsonMockResp);
+                setInterviewQuestion(jsonMockResp);
             } else {
                 console.log("No interview data found");
             }
@@ -69,10 +70,10 @@ const StartInterview = ({ params }) => {
             </div>
             <div className='mb-5 gap-7 flex justify-end'>
                 {activeQuestionIndex > 0 && <Button onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}>Previous Question</Button>}
-                {activeQuestionIndex !== (mockInterviewQuestion?.interviewQuestions?.length - 1) && (
+                {activeQuestionIndex !== ( interviewQuestion?.length - 1) && (
                     <Button onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}>Next Question</Button>
                 )}
-                {activeQuestionIndex === (mockInterviewQuestion?.interviewQuestions?.length - 1) && (
+                {activeQuestionIndex === ( interviewQuestion?.length - 1) && (
                     <Link href={`/dashboard/interview/${interviewData?.mockId}/feedback`}>
                         <Button>End Interview</Button>
                     </Link>

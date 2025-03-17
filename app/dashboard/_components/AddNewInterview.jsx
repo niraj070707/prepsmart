@@ -41,7 +41,7 @@ const AddNewInterview = () => {
             console.log({ jobPosition, jobDescription, jobExperience });
 
             // Construct the input prompt
-            const inputPrompt = `Job position: ${jobPosition} Job description: ${jobDescription} Job experience: ${jobExperience} years, Using this information give us ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} interview questions along with answers and return the result in JSON format. Also, make sure it will parse easily in JSON.`;
+            const inputPrompt = `Job position: ${jobPosition} Job description: ${jobDescription} Job experience: ${jobExperience} years, Using this information give us ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} interview questions along with answers and return the result in JSON format. Also, make sure it will parse easily in JSON. And give respone as array of object as each object has keys question answer and other if needed`;
             console.log('InputPrompt:', inputPrompt);
 
             // Send the prompt to the chat session
