@@ -6,6 +6,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Hide Next.js error overlay */
+nextjs-portal {
+  display: none;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
