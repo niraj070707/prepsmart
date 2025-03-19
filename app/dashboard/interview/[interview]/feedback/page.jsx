@@ -48,7 +48,7 @@ const Feedback = ({ params }) => {
             <h2 className='text-3xl font-bold text-green-500'>Congratulations</h2>
             <h2 className='font-bold text-2xl'>Here is your interview feedback</h2>
             <h2 className='text-primary text-lg my-3'>
-                Your overall interview rating: <strong>{averageRating !== null ? `${averageRating}/10` : "Not available"}</strong>
+                Your overall interview rating: <strong>{averageRating !== null ? `${averageRating}/10` : `0/10`}</strong>
             </h2>
 
             <h2 className='text-sm text-gray-500'>
