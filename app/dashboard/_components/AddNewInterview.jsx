@@ -26,22 +26,24 @@ const AddNewInterview = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [jobPosition, setJobPosition] = useState('');
     const [jobDescription, setJobDescription] = useState('');
+    const [noOfQuestions, setNoOfQuestions] = useState(3);
     const [jobExperience, setJobExperience] = useState(0);
     const [loading, setLoading] = useState(false);
     const [jsonResponce, setJsonResponse] = useState('');
     const user = useUser();
     const router = useRouter();
     console.log(user?.user?.primaryEmailAddress?.emailAddress);
+
     const onSubmit = async (ev) => {
         ev.preventDefault();
         setLoading(true);
 
         try {
             // Log input values for debugging
-            console.log({ jobPosition, jobDescription, jobExperience });
+            console.log({ jobPosition, jobDescription, jobExperience, noOfQuestions});
 
             // Construct the input prompt
-            const inputPrompt = `Job position: ${jobPosition} Job description: ${jobDescription} Job experience: ${jobExperience} years, Using this information give us ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} interview questions along with answers and return the result in JSON format. Also, make sure it will parse easily in JSON. And give respone as array of object as each object has keys question answer and other if needed`;
+            const inputPrompt = `Job position: ${jobPosition} Job description: ${jobDescription} Job experience: ${jobExperience} years, Using this information give us ${noOfQuestions} interview questions along with answers and return the result in JSON format. Also, make sure it will parse easily in JSON. And give respone as array of object as each object has keys questions, answers and other if needed,please check on your side that it easily parsed`;
             console.log('InputPrompt:', inputPrompt);
 
             // Send the prompt to the chat session
@@ -60,6 +62,7 @@ const AddNewInterview = () => {
                 if (mockJsonResponse) {
                     const response = await db.insert(MockInterview).values({
                         mockId: uuidv4(),
+                        noOfQuestions: noOfQuestions,
                         jobPosition: jobPosition,
                         jobDesc: jobDescription,
                         jobExperience: jobExperience,
@@ -124,6 +127,12 @@ const AddNewInterview = () => {
                                     <div>
                                         <Label className="block text-sm font-medium text-gray-700">Years of experience</Label>
                                         <Input onChange={(ev) => setJobExperience(ev.target.value)} placeholder="Ex. 2" type="number" required max={75} />
+                                    </div>
+                                </div>
+                                <div className=" my-3 space-y-4">
+                                    <div>
+                                        <Label className="block text-sm font-medium text-gray-700">Number of Questions</Label>
+                                        <Input onChange={(ev) => setNoOfQuestions(ev.target.value)} placeholder="Ex. 3" type="number" required max={10} />
                                     </div>
                                 </div>
                                 <div className="flex gap-5 justify-end mt-6">

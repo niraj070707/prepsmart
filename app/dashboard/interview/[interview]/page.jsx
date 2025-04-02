@@ -21,6 +21,7 @@ const Interview = ({ params }) => {
         const result = await db.select().from(MockInterview).where(eq(MockInterview.mockId, params.interview));
         console.log(result);
         setInterviewData(result[0]);
+        localStorage.setItem(`noOfQuestions_${params?.interview}`, result[0].noOfQuestions);
     }
     return (
         <div className='my-10'>

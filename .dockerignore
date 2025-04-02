@@ -1,0 +1,31 @@
+# Ignore node modules (they will be installed inside the container)
+node_modules
+
+# Ignore local environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Ignore Git repository files
+.git
+.gitignore
+
+# Ignore build files (if applicable)
+.next
+out
+dist
+
+# Ignore logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs
+*.log
+
+# Ignore editor/IDE settings
+.vscode
+.idea
+.DS_Store

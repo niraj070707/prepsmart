@@ -117,18 +117,6 @@ const RecordAnswerSection = ({ interviewData, mockInterviewQuestion, activeQuest
 
     return (
         <div className="flex flex-col justify-center items-center">
-            <div className="flex flex-col mt-14 justify-center items-center py-10 px-14 rounded-lg bg-black">
-                <Image src="/webcam.png" alt="alt" width={200} height={200} className="absolute" />
-                <Webcam
-                    mirrored={true}
-                    style={{
-                        height: 300,
-                        width: '100%',
-                        zIndex: 10,
-                    }}
-                />
-            </div>
-
             <Button disabled={loading} variant="outline" className="mt-10 mb-5" onClick={startStopRecording}>
                 {isRecording ? (
                     <h2 className="text-red-600 animate-pulse flex gap-3">
