@@ -1,6 +1,6 @@
 "use client"
 import { db } from '@/utils/db';
-import { MockInterview } from '@/utils/schema';
+import { MockInterview, UserAnswer } from '@/utils/schema';
 import { eq } from 'drizzle-orm';
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import QustionsSection from './_components/QustionsSection';
@@ -12,6 +12,7 @@ import Image from 'next/image';
 import Webcam from 'react-webcam';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { useUser } from '@clerk/nextjs';
 
 const StartInterview = ({ params }) => {
     const router = useRouter();
@@ -23,10 +24,11 @@ const StartInterview = ({ params }) => {
     const [timerActive, setTimerActive] = useState(true);
     const [snapshots, setSnapshots] = useState([]);
     const [isCapturing, setIsCapturing] = useState(false);
-    
+
     const webcamRef = useRef(null);
     const captureIntervalRef = useRef(null);
     const snapshotCountRef = useRef(0);
+    const user = useUser();
 
     useEffect(() => {
         if (params.interview) {
@@ -49,7 +51,7 @@ const StartInterview = ({ params }) => {
         if (captureIntervalRef.current) {
             clearInterval(captureIntervalRef.current);
         }
-        
+
         setIsCapturing(true);
         // Capture every 5 seconds
         captureIntervalRef.current = setInterval(() => {
@@ -128,15 +130,15 @@ const StartInterview = ({ params }) => {
 
     const createSnapshotZip = async () => {
         const zip = new JSZip();
-        const imagesFolder = zip.folder("interview_snapshots");
-        
+        const imagesFolder = zip.folder("images");
+
         // Add each snapshot to the zip
         snapshots.forEach((snapshot, index) => {
             // Extract base64 data from the screenshot
             const base64Data = snapshot.data.replace(/^data:image\/\w+;base64,/, '');
             imagesFolder.file(`snapshot_${snapshot.questionIndex}_${index}.png`, base64Data, { base64: true });
         });
-        
+
         // Generate the zip file
         const content = await zip.generateAsync({ type: "blob" });
         return content;
@@ -145,21 +147,43 @@ const StartInterview = ({ params }) => {
     const handleTimeExpired = async () => {
         stopSnapshotCapture();
         setTimerActive(false);
-        
+
         try {
-            // Create zip file of snapshots
             const zipBlob = await createSnapshotZip();
-            
-            // Save the zip file (you can modify this to upload to server instead)
             saveAs(zipBlob, `interview_snapshots_${params.interview}.zip`);
-            
-            // Here you can also make an API call to send the zip to your server
-            // await uploadSnapshotsToServer(zipBlob);
-            
+
+            const formData = new FormData();
+            formData.append('zipfile', zipBlob, `interview_snapshots_${params.interview}.zip`);
+
+            const uploadResponse = await fetch('http://localhost:4000/upload', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
+
+            if (!uploadResponse.ok) {
+                throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+            }
+
+            const analysisResult = await uploadResponse.json();
+            console.log("Analysis result:", analysisResult);
+
+            const re = await db.select().from(UserAnswer).where(eq(UserAnswer.mockIdRef, params?.interview));
+            console.log('re.................................................................... : ', re);
+            // Update database
+            const result = await db
+                .update(UserAnswer)
+                .set({
+                    emotionFeedback: JSON.stringify(analysisResult)
+                })
+                .where(eq(UserAnswer.mockIdRef, params?.interview));
+
+            console.log("Update result:", result); // Log ORM output
+
         } catch (error) {
-            console.error("Error creating snapshot zip:", error);
+            console.error("Error in handleTimeExpired:", error);
         }
-        
+
         localStorage.removeItem(`interviewTimer_${params.interview}`);
         localStorage.removeItem(`noOfQuestions_${params.interview}`);
         router.push(`/dashboard/interview/${interviewData?.mockId}/feedback`);
@@ -192,7 +216,7 @@ const StartInterview = ({ params }) => {
         <div>
             {/* Timer Display */}
             <div className="flex justify-center mt-3 z-50">
-                <div className="text-lg bg-background border rounded-lg p-4 shadow-lg font-semibold">
+                <div className="text-lg bg-gray-400 border rounded-lg p-4 shadow-lg font-semibold">
                     Time Remaining: {formatTime(timeRemaining)}
                 </div>
             </div>
@@ -204,12 +228,12 @@ const StartInterview = ({ params }) => {
                 />
                 <div>
                     <div className="flex flex-col mt-14 justify-center items-center py-10 px-14 rounded-lg bg-black">
-                        <Image 
-                            src="/webcam.png" 
-                            alt="alt" 
-                            width={200} 
-                            height={200} 
-                            className="absolute" 
+                        <Image
+                            src="/webcam.png"
+                            alt="alt"
+                            width={200}
+                            height={200}
+                            className="absolute"
                             style={{ display: isCapturing ? 'none' : 'block' }}
                         />
                         <Webcam
@@ -243,7 +267,7 @@ const StartInterview = ({ params }) => {
                     </Button>
                 )}
             </div>
-            
+
             {/* Debug view (optional) - shows count of captured snapshots */}
             <div className="mt-4 text-sm text-gray-500">
                 Captured {snapshots.length} snapshots

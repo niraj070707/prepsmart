@@ -1,0 +1,27 @@
+/* Ensure the footer is always at the bottom */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    /* background-color: #202329; */
+    background-color:#111827;
+    color: white;
+}
+
+#root, #__next {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full viewport height */
+}
+
+.main-content {
+    flex: 1; /* Pushes the footer to the bottom */
+}
+
+footer {
+    background-color: #0F0F0F;
+    width: 100%;
+    margin-top: auto; /* Keeps footer at the bottom */
+}
