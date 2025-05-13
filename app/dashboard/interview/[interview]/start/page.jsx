@@ -216,7 +216,7 @@ const StartInterview = ({ params }) => {
         <div>
             {/* Timer Display */}
             <div className="flex justify-center mt-3 z-50">
-                <div className="text-lg bg-gray-400 border rounded-lg p-4 shadow-lg font-semibold">
+                <div className="text-lg bg-transparent border rounded-lg p-4 shadow-lg font-semibold">
                     Time Remaining: {formatTime(timeRemaining)}
                 </div>
             </div>
@@ -228,6 +228,7 @@ const StartInterview = ({ params }) => {
                 />
                 <div>
                     <div className="flex flex-col mt-14 justify-center items-center py-10 px-14 rounded-lg bg-black">
+                        <div></div>
                         <Image
                             src="/webcam.png"
                             alt="alt"

@@ -42,7 +42,7 @@ const InterviewItemCard = ({ interview }) => {
 
             <div className='flex justify-between mt-2 gap-5'>
                 <Button onClick={onFeedbackPress} size='sm' variant="outline" className='w-full text-gray-700 bg-gray-200'>Feedback</Button>
-                <Button onClick={onStart} size='sm' className='w-full'>Start</Button>
+                <Button onClick={onStart} size='sm' className='bg-green-700 hover:bg-green-900 w-full'>Start</Button>
             </div>
         </div>
     )
